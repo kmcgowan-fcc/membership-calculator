@@ -6,7 +6,7 @@
     <title>Existing Member Annual Conversion Calculator</title>
     <style>
         .calculator-container {
-            max-width: 500px;
+            max-width: 600px;
             margin: 20px auto;
             padding: 20px;
             font-family: Arial, sans-serif;
@@ -40,6 +40,7 @@
             gap: 10px;
             justify-content: center;
             margin-top: 15px;
+            flex-wrap: wrap;
         }
         
         .btn {
@@ -68,6 +69,16 @@
         
         .btn-no:hover {
             background-color: #c82333;
+        }
+        
+        .btn-member-type {
+            background-color: #0078d4;
+            color: white;
+            padding: 12px 20px;
+        }
+        
+        .btn-member-type:hover {
+            background-color: #005a9e;
         }
         
         .input-group {
@@ -191,6 +202,76 @@
             border: 3px solid #28a745;
         }
         
+        .member-summary {
+            background-color: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #0078d4;
+            margin: 20px 0;
+        }
+        
+        .member-summary h3 {
+            margin-top: 0;
+            color: #0078d4;
+        }
+        
+        .member-item {
+            background-color: white;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #28a745;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .member-item-info {
+            flex-grow: 1;
+        }
+        
+        .member-item-type {
+            font-weight: bold;
+            color: #0078d4;
+        }
+        
+        .member-item-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .member-item-monthly {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .remove-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+        
+        .total-banner {
+            background-color: #0078d4;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        
         .instructions {
             background-color: #e7f3ff;
             padding: 20px;
@@ -210,12 +291,24 @@
         }
         
         .instructions li {
-            margin: 8px 0;
-            line-height: 1.5;
+            margin: 12px 0;
+            line-height: 1.6;
         }
         
         .instructions strong {
             color: #005a9e;
+        }
+        
+        .member-list-in-instructions {
+            background-color: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 4px solid #28a745;
+        }
+        
+        .member-list-in-instructions div {
+            margin: 5px 0;
         }
         
         .hidden {
@@ -237,17 +330,49 @@
         .reset-btn:hover {
             background-color: #5a6268;
         }
+        
+        .savings-celebration {
+            background-color: #d4edda;
+            color: #155724;
+            border: 3px solid #28a745;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .savings-celebration .amount {
+            font-size: 28px;
+            color: #28a745;
+            margin: 10px 0;
+        }
+        
+        .add-another-section {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #0078d4;
+        }
+        
+        .add-another-section h3 {
+            color: #0078d4;
+            margin-top: 0;
+        }
     </style>
 </head>
 <body>
     <div class="calculator-container">
         <h2>Existing Member Annual Conversion Calculator</h2>
         
-        <!-- Initial Question -->
+        <!-- Step 1: Initial Question -->
         <div id="initialQuestion" class="initial-question">
             <h3>Is this an existing member?</h3>
             <div class="button-group">
-                <button class="btn btn-yes" onclick="showCalculator()">YES</button>
+                <button class="btn btn-yes" onclick="confirmExistingMember()">YES</button>
                 <button class="btn btn-no" onclick="showNonMemberWarning()">NO</button>
             </div>
         </div>
@@ -260,8 +385,20 @@
             <button class="reset-btn" onclick="resetCalculator()">Start Over</button>
         </div>
         
-        <!-- Calculator Section -->
+        <!-- Step 2: Member Type Selection -->
+        <div id="memberTypeSection" class="initial-question hidden">
+            <h3>What kind of member is this?</h3>
+            <div class="button-group">
+                <button class="btn btn-member-type" onclick="selectMemberType('Primary/Individual')">Primary/Individual</button>
+                <button class="btn btn-member-type" onclick="selectMemberType('Secondary')">Secondary</button>
+                <button class="btn btn-member-type" onclick="selectMemberType('Family Add-On')">Family Add-On</button>
+            </div>
+        </div>
+        
+        <!-- Step 3: Calculator Section -->
         <div id="calculatorSection" class="hidden">
+            <h3 style="color: #0078d4; text-align: center;" id="calculatorTitle"></h3>
+            
             <div class="input-group">
                 <label for="monthlyAmount">Monthly Dollar Amount:</label>
                 <input type="number" id="monthlyAmount" placeholder="Enter monthly amount" step="0.01" min="0">
@@ -276,7 +413,7 @@
                 <div class="pricing-options">
                     <!-- Option 1: 10% Off -->
                     <div id="option1Card" class="pricing-card">
-                        <h3>Option 1: 10% Discount</h3>
+                        <h3 id="option1Title">Option 1: 10% Discount</h3>
                         <div class="pricing-amount" id="option1Amount"></div>
                         <div class="pricing-details">
                             Full Annual Amount: <span id="fullAnnual"></span><br>
@@ -284,10 +421,10 @@
                         </div>
                     </div>
                     
-                    <!-- Option 2: $999 Flat Rate -->
+                    <!-- Option 2: Deal Rate -->
                     <div id="option2Card" class="pricing-card">
-                        <h3>Option 2: $999 Flat Rate</h3>
-                        <div class="pricing-amount">$999.00</div>
+                        <h3 id="option2Title">Option 2: $999 Flat Rate</h3>
+                        <div class="pricing-amount" id="option2Amount">$999.00</div>
                         <div class="pricing-details">
                             Full Annual Amount: <span id="fullAnnual2"></span><br>
                             <span class="savings">You Save: <span id="option2Savings"></span></span>
@@ -295,16 +432,54 @@
                     </div>
                 </div>
                 
-                <!-- Instructions -->
-                <div class="instructions">
-                    <h3>📋 Sign-Up Steps:</h3>
-                    <ol>
-                        <li>Use <strong>paper M&P</strong></li>
-                        <li>Enter <strong id="instructionAmount"></strong> for "Existing Member Annual"</li>
-                        <li>Use the <strong>conversion quick button in RGP</strong></li>
-                        <li>Set <strong id="instructionMonthly"></strong> as their future recurring charge</li>
-                    </ol>
+                <button class="calculate-btn" onclick="addMemberToList()">Add This Member</button>
+            </div>
+        </div>
+        
+        <!-- Members Summary & Add Another -->
+        <div id="membersSummary" class="hidden">
+            <div class="member-summary">
+                <h3>👥 Members Added</h3>
+                <div id="membersList"></div>
+                <div class="total-banner">
+                    Total: <span id="totalAmount">$0.00</span>
                 </div>
+            </div>
+            
+            <div class="add-another-section">
+                <h3>Anyone else to add?</h3>
+                <div class="button-group">
+                    <button class="btn btn-yes" onclick="addAnotherMember()">YES - Add Another</button>
+                    <button class="btn btn-no" onclick="showFinalInstructions()">NO - Show Instructions</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Final Instructions -->
+        <div id="finalInstructions" class="hidden">
+            <div class="instructions">
+                <h3>📋 Sign-Up Instructions</h3>
+                <ol>
+                    <li>Snag a <strong>paper M&P</strong> for the primary to sign</li>
+                    <li>Set <strong>Dues on M&P</strong> to be:
+                        <div class="member-list-in-instructions" id="duesBreakdown"></div>
+                    </li>
+                    <li>Set <strong>Payment Box</strong> to be:
+                        <div class="member-list-in-instructions" id="paymentBreakdown"></div>
+                        <div style="text-align: right; font-weight: bold; color: #0078d4; margin-top: 10px;">
+                            Total Payment: <span id="totalPayment"></span>
+                        </div>
+                    </li>
+                    <li>Sell the <strong>"Existing Member Annual Conversion"</strong> product with prices:
+                        <div class="member-list-in-instructions" id="productBreakdown"></div>
+                    </li>
+                    <li>Set up the profile as <strong>prepaid from December 10th 2025 until December 9th 2026</strong></li>
+                </ol>
+            </div>
+            
+            <div class="savings-celebration">
+                🎉 This member just saved <span class="amount" id="totalSavings"></span> on a year of Front Membership!<br>
+                Nice work!
             </div>
             
             <button class="reset-btn" onclick="resetCalculator()">Start Over</button>
@@ -312,9 +487,13 @@
     </div>
 
     <script>
-        function showCalculator() {
+        let members = [];
+        let currentMemberType = '';
+        let currentCalculation = null;
+        
+        function confirmExistingMember() {
             document.getElementById('initialQuestion').classList.add('hidden');
-            document.getElementById('calculatorSection').classList.remove('hidden');
+            document.getElementById('memberTypeSection').classList.remove('hidden');
         }
         
         function showNonMemberWarning() {
@@ -322,12 +501,13 @@
             document.getElementById('nonMemberWarning').classList.remove('hidden');
         }
         
-        function resetCalculator() {
-            document.getElementById('initialQuestion').classList.remove('hidden');
-            document.getElementById('nonMemberWarning').classList.add('hidden');
-            document.getElementById('calculatorSection').classList.add('hidden');
-            document.getElementById('results').classList.add('hidden');
+        function selectMemberType(type) {
+            currentMemberType = type;
+            document.getElementById('memberTypeSection').classList.add('hidden');
+            document.getElementById('calculatorSection').classList.remove('hidden');
+            document.getElementById('calculatorTitle').textContent = `${type} Member`;
             document.getElementById('monthlyAmount').value = '';
+            document.getElementById('results').classList.add('hidden');
         }
         
         function calculateMembership() {
@@ -340,11 +520,25 @@
                 return;
             }
             
-            // Calculate values
+            // Calculate values based on member type
             const fullAnnualAmount = monthlyAmount * 12;
             const discountedAmount = fullAnnualAmount * 0.9;
+            
+            let dealAmount, dealName;
+            
+            if (currentMemberType === 'Primary/Individual') {
+                dealAmount = 999;
+                dealName = '$999 Flat Rate';
+            } else if (currentMemberType === 'Secondary') {
+                dealAmount = 990;
+                dealName = '$990 Flat Rate';
+            } else { // Family Add-On
+                dealAmount = 300;
+                dealName = '$300 Flat Rate';
+            }
+            
             const option1Savings = fullAnnualAmount - discountedAmount;
-            const option2Savings = fullAnnualAmount - 999;
+            const option2Savings = fullAnnualAmount - dealAmount;
             
             // Update common values
             document.getElementById('fullAnnual').textContent = `$${fullAnnualAmount.toFixed(2)}`;
@@ -354,7 +548,9 @@
             document.getElementById('option1Amount').textContent = `$${discountedAmount.toFixed(2)}`;
             document.getElementById('option1Savings').textContent = `$${option1Savings.toFixed(2)}`;
             
-            // Update Option 2 ($999)
+            // Update Option 2 (deal rate)
+            document.getElementById('option2Title').textContent = `Option 2: ${dealName}`;
+            document.getElementById('option2Amount').textContent = `$${dealAmount.toFixed(2)}`;
             document.getElementById('option2Savings').textContent = `$${option2Savings.toFixed(2)}`;
             
             const option1Card = document.getElementById('option1Card');
@@ -362,7 +558,8 @@
             const banner = document.getElementById('recommendationBanner');
             
             // Determine which option to recommend
-            if (discountedAmount < 999) {
+            let recommendedAmount;
+            if (discountedAmount < dealAmount) {
                 // Use 10% discount
                 banner.textContent = '✅ Use Option 1 (10% Discount)';
                 
@@ -371,24 +568,123 @@
                 option2Card.classList.remove('recommended');
                 option2Card.classList.add('not-recommended');
                 
-                document.getElementById('instructionAmount').textContent = `$${discountedAmount.toFixed(2)}`;
+                recommendedAmount = discountedAmount;
             } else {
-                // Use $999
-                banner.textContent = '✅ Use Option 2 ($999 Flat Rate)';
+                // Use deal rate
+                banner.textContent = `✅ Use Option 2 (${dealName})`;
                 
                 option2Card.classList.add('recommended');
                 option2Card.classList.remove('not-recommended');
                 option1Card.classList.remove('recommended');
                 option1Card.classList.add('not-recommended');
                 
-                document.getElementById('instructionAmount').textContent = '$999.00';
+                recommendedAmount = dealAmount;
             }
             
-            // Update monthly amount in instructions
-            document.getElementById('instructionMonthly').textContent = `$${monthlyAmount.toFixed(2)}`;
+            // Store current calculation
+            currentCalculation = {
+                type: currentMemberType,
+                monthly: monthlyAmount,
+                recommended: recommendedAmount,
+                fullAnnual: fullAnnualAmount
+            };
             
             // Show results
             resultsDiv.classList.remove('hidden');
+        }
+        
+        function addMemberToList() {
+            if (!currentCalculation) return;
+            
+            members.push(currentCalculation);
+            updateMembersSummary();
+            
+            // Hide calculator and show summary
+            document.getElementById('calculatorSection').classList.add('hidden');
+            document.getElementById('membersSummary').classList.remove('hidden');
+        }
+        
+        function updateMembersSummary() {
+            const membersList = document.getElementById('membersList');
+            membersList.innerHTML = '';
+            
+            let total = 0;
+            
+            members.forEach((member, index) => {
+                total += member.recommended;
+                
+                const memberItem = document.createElement('div');
+                memberItem.className = 'member-item';
+                memberItem.innerHTML = `
+                    <div class="member-item-info">
+                        <div class="member-item-type">${member.type}</div>
+                        <div class="member-item-monthly">Monthly: $${member.monthly.toFixed(2)}</div>
+                    </div>
+                    <div class="member-item-amount">$${member.recommended.toFixed(2)}</div>
+                    <button class="remove-btn" onclick="removeMember(${index})">Remove</button>
+                `;
+                membersList.appendChild(memberItem);
+            });
+            
+            document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
+        }
+        
+        function removeMember(index) {
+            members.splice(index, 1);
+            if (members.length === 0) {
+                document.getElementById('membersSummary').classList.add('hidden');
+                document.getElementById('memberTypeSection').classList.remove('hidden');
+            } else {
+                updateMembersSummary();
+            }
+        }
+        
+        function addAnotherMember() {
+            document.getElementById('membersSummary').classList.add('hidden');
+            document.getElementById('memberTypeSection').classList.remove('hidden');
+        }
+        
+        function showFinalInstructions() {
+            // Build dues breakdown
+            let duesHTML = '';
+            let paymentHTML = '';
+            let productHTML = '';
+            let totalPayment = 0;
+            let totalFullAnnual = 0;
+            
+            members.forEach(member => {
+                duesHTML += `<div><strong>${member.type}:</strong> $${member.monthly.toFixed(2)}</div>`;
+                paymentHTML += `<div><strong>${member.type}:</strong> $${member.recommended.toFixed(2)}</div>`;
+                productHTML += `<div><strong>${member.type}:</strong> $${member.recommended.toFixed(2)}</div>`;
+                totalPayment += member.recommended;
+                totalFullAnnual += member.fullAnnual;
+            });
+            
+            const totalSavings = totalFullAnnual - totalPayment;
+            
+            document.getElementById('duesBreakdown').innerHTML = duesHTML;
+            document.getElementById('paymentBreakdown').innerHTML = paymentHTML;
+            document.getElementById('productBreakdown').innerHTML = productHTML;
+            document.getElementById('totalPayment').textContent = `$${totalPayment.toFixed(2)}`;
+            document.getElementById('totalSavings').textContent = `$${totalSavings.toFixed(2)}`;
+            
+            document.getElementById('membersSummary').classList.add('hidden');
+            document.getElementById('finalInstructions').classList.remove('hidden');
+        }
+        
+        function resetCalculator() {
+            members = [];
+            currentMemberType = '';
+            currentCalculation = null;
+            
+            document.getElementById('initialQuestion').classList.remove('hidden');
+            document.getElementById('nonMemberWarning').classList.add('hidden');
+            document.getElementById('memberTypeSection').classList.add('hidden');
+            document.getElementById('calculatorSection').classList.add('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('membersSummary').classList.add('hidden');
+            document.getElementById('finalInstructions').classList.add('hidden');
+            document.getElementById('monthlyAmount').value = '';
         }
         
         // Allow Enter key to trigger calculation
