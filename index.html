@@ -3,16 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Membership Calculator</title>
+    <title>Existing Member Annual Conversion Calculator</title>
     <style>
         .calculator-container {
-            max-width: 400px;
+            max-width: 500px;
             margin: 20px auto;
             padding: 20px;
             font-family: Arial, sans-serif;
             border: 1px solid #ddd;
             border-radius: 8px;
             background-color: #f9f9f9;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        
+        .initial-question {
+            background-color: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #ffc107;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .initial-question h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-yes {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-yes:hover {
+            background-color: #218838;
+        }
+        
+        .btn-no {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-no:hover {
+            background-color: #c82333;
         }
         
         .input-group {
@@ -34,7 +89,7 @@
             box-sizing: border-box;
         }
         
-        button {
+        button.calculate-btn {
             width: 100%;
             padding: 12px;
             font-size: 16px;
@@ -46,96 +101,294 @@
             cursor: pointer;
         }
         
-        button:hover {
+        button.calculate-btn:hover {
             background-color: #005a9e;
         }
         
-        .result {
+        .non-member-warning {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 3px solid #dc3545;
+            padding: 25px;
+            border-radius: 8px;
             margin-top: 20px;
-            padding: 15px;
-            border-radius: 4px;
-            font-weight: bold;
             text-align: center;
         }
         
-        .result.green {
+        .non-member-warning h3 {
+            font-size: 24px;
+            margin-top: 0;
+            color: #dc3545;
+        }
+        
+        .non-member-warning p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        
+        .results-container {
+            margin-top: 25px;
+        }
+        
+        .pricing-options {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .pricing-card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+        
+        .pricing-card.recommended {
+            border-color: #28a745;
+            border-width: 3px;
+            background-color: #d4edda;
+        }
+        
+        .pricing-card.not-recommended {
+            opacity: 0.7;
+        }
+        
+        .pricing-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .pricing-card.recommended h3 {
+            color: #28a745;
+        }
+        
+        .pricing-details {
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        .pricing-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0078d4;
+            margin: 10px 0;
+        }
+        
+        .savings {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .recommendation-banner {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
             background-color: #d4edda;
             color: #155724;
-            border: 2px solid #28a745;
+            border: 3px solid #28a745;
         }
         
-        .result.red {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 2px solid #dc3545;
+        .instructions {
+            background-color: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #0078d4;
+            margin-top: 20px;
         }
         
-        .calculation-details {
-            margin-top: 10px;
-            font-size: 14px;
-            font-weight: normal;
+        .instructions h3 {
+            margin-top: 0;
+            color: #0078d4;
+        }
+        
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        
+        .instructions strong {
+            color: #005a9e;
         }
         
         .hidden {
             display: none;
         }
+        
+        .reset-btn {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .reset-btn:hover {
+            background-color: #5a6268;
+        }
     </style>
 </head>
 <body>
     <div class="calculator-container">
-        <h2>Membership Calculator</h2>
+        <h2>Existing Member Annual Conversion Calculator</h2>
         
-        <div class="input-group">
-            <label for="monthlyAmount">Monthly Dollar Amount:</label>
-            <input type="number" id="monthlyAmount" placeholder="Enter monthly amount" step="0.01" min="0">
+        <!-- Initial Question -->
+        <div id="initialQuestion" class="initial-question">
+            <h3>Is this an existing member?</h3>
+            <div class="button-group">
+                <button class="btn btn-yes" onclick="showCalculator()">YES</button>
+                <button class="btn btn-no" onclick="showNonMemberWarning()">NO</button>
+            </div>
         </div>
         
-        <button onclick="calculateMembership()">Calculate</button>
+        <!-- Non-Member Warning -->
+        <div id="nonMemberWarning" class="non-member-warning hidden">
+            <h3>🛑 STOP!</h3>
+            <p><strong>This calculator is for existing members ONLY!</strong></p>
+            <p>Use Pebble to onboard new members with the $999 deal</p>
+            <button class="reset-btn" onclick="resetCalculator()">Start Over</button>
+        </div>
         
-        <div id="result" class="result hidden"></div>
+        <!-- Calculator Section -->
+        <div id="calculatorSection" class="hidden">
+            <div class="input-group">
+                <label for="monthlyAmount">Monthly Dollar Amount:</label>
+                <input type="number" id="monthlyAmount" placeholder="Enter monthly amount" step="0.01" min="0">
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateMembership()">Calculate</button>
+            
+            <!-- Results Section -->
+            <div id="results" class="results-container hidden">
+                <div id="recommendationBanner" class="recommendation-banner"></div>
+                
+                <div class="pricing-options">
+                    <!-- Option 1: 10% Off -->
+                    <div id="option1Card" class="pricing-card">
+                        <h3>Option 1: 10% Discount</h3>
+                        <div class="pricing-amount" id="option1Amount"></div>
+                        <div class="pricing-details">
+                            Full Annual Amount: <span id="fullAnnual"></span><br>
+                            <span class="savings">You Save: <span id="option1Savings"></span></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Option 2: $999 Flat Rate -->
+                    <div id="option2Card" class="pricing-card">
+                        <h3>Option 2: $999 Flat Rate</h3>
+                        <div class="pricing-amount">$999.00</div>
+                        <div class="pricing-details">
+                            Full Annual Amount: <span id="fullAnnual2"></span><br>
+                            <span class="savings">You Save: <span id="option2Savings"></span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Instructions -->
+                <div class="instructions">
+                    <h3>📋 Sign-Up Steps:</h3>
+                    <ol>
+                        <li>Use <strong>paper M&P</strong></li>
+                        <li>Enter <strong id="instructionAmount"></strong> for "Existing Member Annual"</li>
+                        <li>Use the <strong>conversion quick button in RGP</strong></li>
+                        <li>Set <strong id="instructionMonthly"></strong> as their future recurring charge</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <button class="reset-btn" onclick="resetCalculator()">Start Over</button>
+        </div>
     </div>
 
     <script>
+        function showCalculator() {
+            document.getElementById('initialQuestion').classList.add('hidden');
+            document.getElementById('calculatorSection').classList.remove('hidden');
+        }
+        
+        function showNonMemberWarning() {
+            document.getElementById('initialQuestion').classList.add('hidden');
+            document.getElementById('nonMemberWarning').classList.remove('hidden');
+        }
+        
+        function resetCalculator() {
+            document.getElementById('initialQuestion').classList.remove('hidden');
+            document.getElementById('nonMemberWarning').classList.add('hidden');
+            document.getElementById('calculatorSection').classList.add('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('monthlyAmount').value = '';
+        }
+        
         function calculateMembership() {
             const monthlyAmount = parseFloat(document.getElementById('monthlyAmount').value);
-            const resultDiv = document.getElementById('result');
+            const resultsDiv = document.getElementById('results');
             
             // Validate input
             if (isNaN(monthlyAmount) || monthlyAmount <= 0) {
-                resultDiv.className = 'result red';
-                resultDiv.innerHTML = 'Please enter a valid monthly amount greater than $0';
-                resultDiv.classList.remove('hidden');
+                alert('Please enter a valid monthly amount greater than $0');
                 return;
             }
             
-            // Calculate annual amount
-            const annualAmount = monthlyAmount * 12;
+            // Calculate values
+            const fullAnnualAmount = monthlyAmount * 12;
+            const discountedAmount = fullAnnualAmount * 0.9;
+            const option1Savings = fullAnnualAmount - discountedAmount;
+            const option2Savings = fullAnnualAmount - 999;
             
-            // Apply 10% discount
-            const discountedAmount = annualAmount * 0.9;
+            // Update common values
+            document.getElementById('fullAnnual').textContent = `$${fullAnnualAmount.toFixed(2)}`;
+            document.getElementById('fullAnnual2').textContent = `$${fullAnnualAmount.toFixed(2)}`;
             
-            // Determine result
+            // Update Option 1 (10% off)
+            document.getElementById('option1Amount').textContent = `$${discountedAmount.toFixed(2)}`;
+            document.getElementById('option1Savings').textContent = `$${option1Savings.toFixed(2)}`;
+            
+            // Update Option 2 ($999)
+            document.getElementById('option2Savings').textContent = `$${option2Savings.toFixed(2)}`;
+            
+            const option1Card = document.getElementById('option1Card');
+            const option2Card = document.getElementById('option2Card');
+            const banner = document.getElementById('recommendationBanner');
+            
+            // Determine which option to recommend
             if (discountedAmount < 999) {
-                resultDiv.className = 'result green';
-                resultDiv.innerHTML = `
-                    <div>✅ GREEN LIGHT</div>
-                    <div class="calculation-details">
-                        Annual Total (with 10% off): $${discountedAmount.toFixed(2)}<br>
-                        <strong>Do it on paper!</strong>
-                    </div>
-                `;
+                // Use 10% discount
+                banner.textContent = '✅ Use Option 1 (10% Discount)';
+                
+                option1Card.classList.add('recommended');
+                option1Card.classList.remove('not-recommended');
+                option2Card.classList.remove('recommended');
+                option2Card.classList.add('not-recommended');
+                
+                document.getElementById('instructionAmount').textContent = `$${discountedAmount.toFixed(2)}`;
             } else {
-                resultDiv.className = 'result red';
-                resultDiv.innerHTML = `
-                    <div>🛑 RED LIGHT</div>
-                    <div class="calculation-details">
-                        Annual Total (with 10% off): $${discountedAmount.toFixed(2)}<br>
-                        <strong>Go to the regular membership offering - it's a better deal!</strong>
-                    </div>
-                `;
+                // Use $999
+                banner.textContent = '✅ Use Option 2 ($999 Flat Rate)';
+                
+                option2Card.classList.add('recommended');
+                option2Card.classList.remove('not-recommended');
+                option1Card.classList.remove('recommended');
+                option1Card.classList.add('not-recommended');
+                
+                document.getElementById('instructionAmount').textContent = '$999.00';
             }
             
-            resultDiv.classList.remove('hidden');
+            // Update monthly amount in instructions
+            document.getElementById('instructionMonthly').textContent = `$${monthlyAmount.toFixed(2)}`;
+            
+            // Show results
+            resultsDiv.classList.remove('hidden');
         }
         
         // Allow Enter key to trigger calculation
